@@ -7,7 +7,7 @@ let evens = [];
 
 function push_number(n) {
 	const number = parseInt(n);
-	if (number) {
+	if (!Number.isNaN(number)) {
 		number_bank.push(number);
 	}
 }
@@ -25,8 +25,12 @@ function push_sort(n) {
 }
 
 function pull_one() {
-	const number = number_bank.shift();
-	push_sort(number);
+	if (0 < number_bank.length) {
+		const number = number_bank.shift();
+		push_sort(number);
+		return number;
+	}
+	return NaN;
 }
 
 function pull_all() {
@@ -62,3 +66,46 @@ function $render_all() {
 }
 
 /* Script */
+/**
+ *
+ * @param {Event} event
+ */
+function add_one(event) {
+	// form script, prevent refereshing
+	event.preventDefault();
+
+	const $number = document.querySelector("#number");
+	push_number($number.value);
+
+	$number.value = "";
+	$render_number_bank();
+}
+
+function sort_one(event) {
+	event.preventDefault();
+
+	const value = pull_one();
+	$render_number_bank();
+	if (!Number.isNaN(value)) {
+		if (is_even(value) === true) {
+			$render_evens();
+		} else if (is_even(value) === false) {
+			$render_odds();
+		}
+	}
+}
+
+function sort_all(event) {
+	event.preventDefault();
+
+	pull_all();
+	$render_all();
+}
+
+const form = document.querySelector("form");
+const btn1 = document.querySelector("#sortOne");
+const btn2 = document.querySelector("#sortAll");
+
+form.addEventListener("submit", add_one);
+btn1.addEventListener("click", sort_one);
+btn2.addEventListener("click", sort_all);
